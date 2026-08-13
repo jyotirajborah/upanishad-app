@@ -19,7 +19,7 @@ class UpdateChecker(private val context: Context) {
     
     companion object {
         private const val GITHUB_API_URL = "https://api.github.com/repos/jyotirajborah/upanishad-app/releases/latest"
-        private const val CURRENT_VERSION = "1.2.0" // Update this with each release
+        private const val CURRENT_VERSION = "1.2.1" // Update this with each release
     }
     
     data class UpdateInfo(
@@ -51,14 +51,12 @@ class UpdateChecker(private val context: Context) {
     
     private fun parseUpdateInfo(json: String): UpdateInfo? {
         return try {
-            // Simple JSON parsing (in production, use Gson or kotlinx.serialization)
             val versionRegex = """"tag_name":\s*"v?([^"]+)"""".toRegex()
-            val downloadRegex = """"browser_download_url":\s*"([^"]+\.apk)"""".toRegex()
             val notesRegex = """"body":\s*"([^"]+)"""".toRegex()
             
             val version = versionRegex.find(json)?.groupValues?.get(1)
-            val downloadUrl = downloadRegex.find(json)?.groupValues?.get(1) 
-                ?: "https://github.com/jyotirajborah/upanishad-app/releases/latest/download/app-debug.apk"
+            // Always use app-debug.apk for consistent updates
+            val downloadUrl = "https://github.com/jyotirajborah/upanishad-app/releases/latest/download/app-debug.apk"
             val notes = notesRegex.find(json)?.groupValues?.get(1) ?: "New version available"
             
             if (version != null && version != CURRENT_VERSION) {
