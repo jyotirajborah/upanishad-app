@@ -19,7 +19,7 @@ class UpdateChecker(private val context: Context) {
     
     companion object {
         private const val GITHUB_API_URL = "https://api.github.com/repos/jyotirajborah/upanishad-app/releases/latest"
-        private const val CURRENT_VERSION = "1.0.0" // Update this with each release
+        private const val CURRENT_VERSION = "1.1.0" // Update this with each release
     }
     
     data class UpdateInfo(
