@@ -167,68 +167,66 @@ fun MainScreen() {
     
     Scaffold(
         bottomBar = {
-            if (currentRoute == Screen.Home.route) {
-                NavigationBar(
-                    containerColor = Charcoal,
-                    contentColor = Gold
-                ) {
-                    NavigationBarItem(
-                        icon = {
-                            Column {
-                                androidx.compose.material3.Icon(
-                                    Icons.Default.Home,
-                                    contentDescription = "Home"
-                                )
-                            }
-                        },
-                        label = { Text("Home") },
-                        selected = true,
-                        onClick = { },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Gold,
-                            selectedTextColor = Gold,
-                            indicatorColor = Gold.copy(alpha = 0.2f),
-                            unselectedIconColor = Cream.copy(alpha = 0.5f),
-                            unselectedTextColor = Cream.copy(alpha = 0.5f)
-                        )
-                    )
-                    NavigationBarItem(
-                        icon = {
-                            Text(
-                                text = "🕉️",
-                                fontSize = 24.sp
+            NavigationBar(
+                containerColor = Charcoal,
+                contentColor = Gold
+            ) {
+                NavigationBarItem(
+                    icon = {
+                        Column {
+                            androidx.compose.material3.Icon(
+                                Icons.Default.Home,
+                                contentDescription = "Home"
                             )
-                        },
-                        label = { Text("Shloka") },
-                        selected = false,
-                        onClick = { navController.navigate(Screen.Shloka.route) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Gold,
-                            selectedTextColor = Gold,
-                            indicatorColor = Gold.copy(alpha = 0.2f),
-                            unselectedIconColor = Cream.copy(alpha = 0.5f),
-                            unselectedTextColor = Cream.copy(alpha = 0.5f)
-                        )
+                        }
+                    },
+                    label = { Text("Home") },
+                    selected = currentRoute == Screen.Home.route,
+                    onClick = { navController.navigate(Screen.Home.route) },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Gold,
+                        selectedTextColor = Gold,
+                        indicatorColor = Gold.copy(alpha = 0.2f),
+                        unselectedIconColor = Cream.copy(alpha = 0.5f),
+                        unselectedTextColor = Cream.copy(alpha = 0.5f)
                     )
-                    NavigationBarItem(
-                        icon = {
-                            Text(
-                                text = "📜",
-                                fontSize = 24.sp
-                            )
-                        },
-                        label = { Text("About") },
-                        selected = false,
-                        onClick = { /* TODO: About screen */ },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Gold,
-                            selectedTextColor = Gold,
-                            indicatorColor = Gold.copy(alpha = 0.2f),
-                            unselectedIconColor = Cream.copy(alpha = 0.5f),
-                            unselectedTextColor = Cream.copy(alpha = 0.5f)
+                )
+                NavigationBarItem(
+                    icon = {
+                        Text(
+                            text = "🕉️",
+                            fontSize = 24.sp
                         )
+                    },
+                    label = { Text("Shloka") },
+                    selected = currentRoute == Screen.Shloka.route,
+                    onClick = { navController.navigate(Screen.Shloka.route) },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Gold,
+                        selectedTextColor = Gold,
+                        indicatorColor = Gold.copy(alpha = 0.2f),
+                        unselectedIconColor = Cream.copy(alpha = 0.5f),
+                        unselectedTextColor = Cream.copy(alpha = 0.5f)
                     )
-                }
+                )
+                NavigationBarItem(
+                    icon = {
+                        Text(
+                            text = "📜",
+                            fontSize = 24.sp
+                        )
+                    },
+                    label = { Text("About") },
+                    selected = currentRoute == Screen.Upanishads.route,
+                    onClick = { navController.navigate(Screen.Upanishads.route) },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Gold,
+                        selectedTextColor = Gold,
+                        indicatorColor = Gold.copy(alpha = 0.2f),
+                        unselectedIconColor = Cream.copy(alpha = 0.5f),
+                        unselectedTextColor = Cream.copy(alpha = 0.5f)
+                    )
+                )
             }
         }
     ) { paddingValues ->
