@@ -183,7 +183,7 @@ fun QuoteCard(quote: com.upanishad.gyanamrit.data.Quote) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = """,
+                    text = "“",
                     fontSize = 64.sp,
                     color = Gold.copy(alpha = 0.2f),
                     lineHeight = 0.sp,
