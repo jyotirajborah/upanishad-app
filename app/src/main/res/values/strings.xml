@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Upanishad Gyanamrit</string>
+    <string name="app_tagline">Nectar of Vedic Wisdom</string>
+    <string name="om">ॐ</string>
+    <string name="lead_me_from_darkness">असतो मा सद्गमय, तमसो मा ज्योतिर्गमय</string>
+    <string name="lead_me_translation">Lead me from the unreal to the real, from darkness to light</string>
+</resources>
