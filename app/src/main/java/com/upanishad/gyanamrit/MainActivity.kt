@@ -117,10 +117,18 @@ fun UpdateDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = "Update",
+                tint = Gold,
+                modifier = Modifier.size(48.dp)
+            )
+        },
         title = {
             Column {
                 Text(
-                    "🎉 Update Available",
+                    "Update Available",
                     style = MaterialTheme.typography.titleLarge,
                     color = Gold
                 )
@@ -193,9 +201,9 @@ fun MainScreen() {
                 )
                 NavigationBarItem(
                     icon = {
-                        Text(
-                            text = "🕉️",
-                            fontSize = 24.sp
+                        Icon(
+                            imageVector = Icons.Default.Face,
+                            contentDescription = "Shloka"
                         )
                     },
                     label = { Text("Shloka") },
@@ -211,9 +219,9 @@ fun MainScreen() {
                 )
                 NavigationBarItem(
                     icon = {
-                        Text(
-                            text = "📜",
-                            fontSize = 24.sp
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "About"
                         )
                     },
                     label = { Text("About") },

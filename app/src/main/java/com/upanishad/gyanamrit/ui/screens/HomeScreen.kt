@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -172,19 +174,19 @@ fun HomeScreen(
             NavigationCard(
                 title = "Principal Upanishads",
                 description = "Explore the 13 Mukhya Upanishads",
-                icon = "🕉️",
+                icon = Icons.Default.MenuBook,
                 onClick = onNavigateToUpanishads
             )
             NavigationCard(
                 title = "Core Teachings",
                 description = "Learn about Brahman, Atman, and more",
-                icon = "✨",
+                icon = Icons.Default.Star,
                 onClick = onNavigateToTeachings
             )
             NavigationCard(
                 title = "Eternal Wisdom",
                 description = "Read timeless quotes and verses",
-                icon = "📜",
+                icon = Icons.Default.Edit,
                 onClick = onNavigateToQuotes
             )
             
@@ -217,10 +219,13 @@ fun HomeScreen(
                         .padding(20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = if (isCheckingUpdate) "⏳" else "🔄",
-                        fontSize = 36.sp,
-                        modifier = Modifier.padding(end = 16.dp)
+                    Icon(
+                        imageVector = if (isCheckingUpdate) Icons.Default.Refresh else Icons.Default.Refresh,
+                        contentDescription = "Update",
+                        tint = Gold,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .padding(end = 16.dp)
                     )
                     Column {
                         Text(
@@ -243,7 +248,17 @@ fun HomeScreen(
     if (showUpdateCheck) {
         AlertDialog(
             onDismissRequest = { showUpdateCheck = false },
-            title = { Text("✅ You're Up to Date", color = Gold) },
+            title = { 
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        tint = Gold,
+                        modifier = Modifier.size(24.dp).padding(end = 8.dp)
+                    )
+                    Text("You're Up to Date", color = Gold)
+                }
+            },
             text = { Text("You have the latest version installed.", color = Cream.copy(alpha = 0.8f)) },
             confirmButton = {
                 TextButton(onClick = { showUpdateCheck = false }) {
@@ -293,7 +308,7 @@ fun StatCard(number: String, label: String, modifier: Modifier = Modifier) {
 fun NavigationCard(
     title: String,
     description: String,
-    icon: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     onClick: () -> Unit
 ) {
     Card(
@@ -310,10 +325,13 @@ fun NavigationCard(
                 .padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = icon,
-                fontSize = 36.sp,
-                modifier = Modifier.padding(end = 16.dp)
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = Gold,
+                modifier = Modifier
+                    .size(36.dp)
+                    .padding(end = 16.dp)
             )
             Column {
                 Text(
