@@ -9,9 +9,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -53,7 +55,9 @@ class MainActivity : ComponentActivity() {
         updateChecker = UpdateChecker(this)
         
         setContent {
-            UpanishadGyanamritTheme(darkTheme = true) {
+            var isDarkTheme by remember { mutableStateOf(true) }
+            
+            UpanishadGyanamritTheme(darkTheme = isDarkTheme) {
                 var showUpdateDialog by remember { mutableStateOf(false) }
                 var updateInfo by remember { mutableStateOf<UpdateChecker.UpdateInfo?>(null) }
                 
@@ -77,7 +81,10 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 
-                MainScreen()
+                MainScreen(
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = { isDarkTheme = !isDarkTheme }
+                )
             }
         }
     }
@@ -170,12 +177,35 @@ fun UpdateDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    isDarkTheme: Boolean = true,
+    onToggleTheme: () -> Unit = {}
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     
     Scaffold(
+        topBar = {
+            if (currentRoute == Screen.Home.route) {
+                TopAppBar(
+                    title = { Text("Upanishad Gyanamrit", color = GoldLight) },
+                    actions = {
+                        IconButton(onClick = onToggleTheme) {
+                            Icon(
+                                imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                                contentDescription = "Toggle Theme",
+                                tint = Gold
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Charcoal,
+                        titleContentColor = GoldLight
+                    )
+                )
+            }
+        },
         bottomBar = {
             NavigationBar(
                 containerColor = Charcoal,
