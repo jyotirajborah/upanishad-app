@@ -5,14 +5,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.upanishad.gyanamrit.UpdateChecker
 import com.upanishad.gyanamrit.data.ShlokaRepository
 import com.upanishad.gyanamrit.ui.theme.*
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -21,6 +23,10 @@ fun HomeScreen(
     onNavigateToQuotes: () -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var showUpdateCheck by remember { mutableStateOf(false) }
+    var isCheckingUpdate by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
     
     Column(
         modifier = Modifier
@@ -181,7 +187,71 @@ fun HomeScreen(
                 icon = "📜",
                 onClick = onNavigateToQuotes
             )
+            
+            // Check for Updates Card
+            Card(
+                onClick = {
+                    if (!isCheckingUpdate) {
+                        isCheckingUpdate = true
+                        coroutineScope.launch {
+                            val updateChecker = UpdateChecker(context)
+                            val update = updateChecker.checkForUpdates()
+                            if (update != null) {
+                                updateChecker.downloadAndInstallUpdate(update.downloadUrl)
+                            } else {
+                                showUpdateCheck = true
+                            }
+                            isCheckingUpdate = false
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = Gold.copy(alpha = 0.08f)
+                ),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Gold.copy(alpha = 0.3f))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (isCheckingUpdate) "⏳" else "🔄",
+                        fontSize = 36.sp,
+                        modifier = Modifier.padding(end = 16.dp)
+                    )
+                    Column {
+                        Text(
+                            text = if (isCheckingUpdate) "Checking..." else "Check for Updates",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = GoldLight
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Get the latest features and content",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Cream.copy(alpha = 0.65f)
+                        )
+                    }
+                }
+            }
         }
+    }
+    
+    if (showUpdateCheck) {
+        AlertDialog(
+            onDismissRequest = { showUpdateCheck = false },
+            title = { Text("✅ You're Up to Date", color = Gold) },
+            text = { Text("You have the latest version installed.", color = Cream.copy(alpha = 0.8f)) },
+            confirmButton = {
+                TextButton(onClick = { showUpdateCheck = false }) {
+                    Text("OK", color = Gold)
+                }
+            },
+            containerColor = Charcoal
+        )
     }
 }
 

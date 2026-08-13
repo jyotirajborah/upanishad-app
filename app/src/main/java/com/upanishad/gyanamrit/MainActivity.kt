@@ -1,8 +1,12 @@
 package com.upanishad.gyanamrit
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -12,6 +16,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,6 +25,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.upanishad.gyanamrit.ui.screens.*
 import com.upanishad.gyanamrit.ui.theme.*
+import kotlinx.coroutines.launch
 
 sealed class Screen(val route: String, val title: String, val sanskritTitle: String) {
     object Home : Screen("home", "Home", "गृह")
@@ -29,14 +36,126 @@ sealed class Screen(val route: String, val title: String, val sanskritTitle: Str
 }
 
 class MainActivity : ComponentActivity() {
+    private lateinit var updateChecker: UpdateChecker
+    
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            checkForUpdates()
+        }
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        updateChecker = UpdateChecker(this)
+        
         setContent {
             UpanishadGyanamritTheme(darkTheme = true) {
+                var showUpdateDialog by remember { mutableStateOf(false) }
+                var updateInfo by remember { mutableStateOf<UpdateChecker.UpdateInfo?>(null) }
+                
+                LaunchedEffect(Unit) {
+                    // Check for updates on app launch
+                    val update = updateChecker.checkForUpdates()
+                    if (update != null) {
+                        updateInfo = update
+                        showUpdateDialog = true
+                    }
+                }
+                
+                if (showUpdateDialog && updateInfo != null) {
+                    UpdateDialog(
+                        updateInfo = updateInfo!!,
+                        onDismiss = { showUpdateDialog = false },
+                        onUpdate = {
+                            requestStoragePermissionAndUpdate(updateInfo!!.downloadUrl)
+                            showUpdateDialog = false
+                        }
+                    )
+                }
+                
                 MainScreen()
             }
         }
     }
+    
+    private fun requestStoragePermissionAndUpdate(downloadUrl: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+ doesn't need storage permission for downloads
+            updateChecker.downloadAndInstallUpdate(downloadUrl)
+        } else {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    updateChecker.downloadAndInstallUpdate(downloadUrl)
+                }
+                else -> {
+                    requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
+            }
+        }
+    }
+    
+    private fun checkForUpdates() {
+        lifecycleScope.launch {
+            val update = updateChecker.checkForUpdates()
+            if (update != null) {
+                updateChecker.downloadAndInstallUpdate(update.downloadUrl)
+            }
+        }
+    }
+}
+
+@Composable
+fun UpdateDialog(
+    updateInfo: UpdateChecker.UpdateInfo,
+    onDismiss: () -> Unit,
+    onUpdate: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Column {
+                Text(
+                    "🎉 Update Available",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Gold
+                )
+                Text(
+                    "Version ${updateInfo.version}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Saffron
+                )
+            }
+        },
+        text = {
+            Text(
+                "A new version of Upanishad Gyanamrit is available!\n\n${updateInfo.releaseNotes}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Cream.copy(alpha = 0.8f)
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = onUpdate,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Gold
+                )
+            ) {
+                Text("Update Now", color = Charcoal)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Later", color = Cream.copy(alpha = 0.7f))
+            }
+        },
+        containerColor = Charcoal,
+        iconContentColor = Gold
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
