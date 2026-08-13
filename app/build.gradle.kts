@@ -27,6 +27,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Use debug signing for now - consistent across all builds
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        debug {
+            // Explicitly set debug signing config
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {

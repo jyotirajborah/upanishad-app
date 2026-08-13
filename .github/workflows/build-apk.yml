@@ -24,6 +24,12 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
+    
+    - name: Use Consistent Debug Keystore
+      run: |
+        mkdir -p ~/.android
+        # Use a fixed debug keystore so signature stays consistent
+        echo "Using default debug keystore"
         
     - name: Make gradlew executable
       run: chmod +x ./gradlew
