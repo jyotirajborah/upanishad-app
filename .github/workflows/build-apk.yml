@@ -3,6 +3,8 @@ name: Build APK
 on:
   push:
     branches: [ main, master ]
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -25,8 +27,52 @@ jobs:
     - name: Build APK
       run: ./gradlew assembleDebug --stacktrace --no-daemon
       
-    - name: Upload APK
+    - name: Upload APK as Artifact
+      if: startsWith(github.ref, 'refs/heads/')
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
         path: app/build/outputs/apk/debug/*.apk
+        
+    - name: Rename APK for Release
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        mkdir -p release
+        cp app/build/outputs/apk/debug/app-debug.apk release/upanishad-app-${{ github.ref_name }}.apk
+        cp app/build/outputs/apk/debug/app-debug.apk release/app-debug.apk
+        
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          release/upanishad-app-${{ github.ref_name }}.apk
+          release/app-debug.apk
+        body: |
+          ## 🎉 Upanishad Gyanamrit ${{ github.ref_name }}
+          
+          Download the APK and install on your Android device!
+          
+          ### ✨ Features:
+          - 13 Principal Upanishads with detailed descriptions
+          - Daily Sanskrit verses with translations
+          - Core philosophical teachings explained
+          - Wisdom quotes library
+          - Works completely offline
+          - Beautiful dark theme
+          
+          ### 📋 Requirements:
+          - Android 7.0 (Nougat) or higher
+          - ~8-10 MB storage space
+          
+          ### 📥 Installation:
+          1. Download `app-debug.apk` below
+          2. Open the file on your Android device
+          3. Allow installation from unknown sources if prompted
+          4. Tap Install and enjoy!
+          
+          **ॐ शान्ति** 🙏
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
