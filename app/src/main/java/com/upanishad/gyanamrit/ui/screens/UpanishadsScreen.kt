@@ -97,10 +97,13 @@ fun UpanishadCard(upanishad: Upanishad) {
                 .fillMaxWidth()
                 .padding(20.dp)
         ) {
-            Text(
-                text = upanishad.icon,
-                fontSize = 36.sp,
-                modifier = Modifier.padding(bottom = 12.dp)
+            Icon(
+                imageVector = upanishad.iconType.icon,
+                contentDescription = upanishad.name,
+                tint = Gold,
+                modifier = Modifier
+                    .size(36.dp)
+                    .padding(bottom = 12.dp)
             )
             Text(
                 text = upanishad.name,

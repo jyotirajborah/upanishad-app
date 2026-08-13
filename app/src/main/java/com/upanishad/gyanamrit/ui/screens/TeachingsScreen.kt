@@ -108,9 +108,11 @@ fun TeachingCard(teaching: Teaching) {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Text(
-                        text = teaching.icon,
-                        fontSize = 32.sp
+                    Icon(
+                        imageVector = teaching.iconType.icon,
+                        contentDescription = teaching.name,
+                        tint = Gold,
+                        modifier = Modifier.size(32.dp)
                     )
                 }
             }
